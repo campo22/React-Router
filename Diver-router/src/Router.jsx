@@ -1,14 +1,20 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from 'react';
+import { Children, useEffect, useState } from 'react';
 import { EVENTS } from './const';
 import { match } from 'path-to-regexp';
+import { getCurrentPath } from './utils';
 
-export function Router({ routes = [], defaultComponent: DefaultComponent = () => <h1>404</h1> }) {
-    const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+
+export function Router({ children, routes = [], defaultComponent: DefaultComponent = () => <h1>404</h1> }) {
+
+
+    const [currentPath, setCurrentPath] = useState(getCurrentPath());
+
 
     useEffect(() => {
         const onLocationChange = () => {
-            setCurrentPath(window.location.pathname);
+            setCurrentPath(getCurrentPath());
         };
         window.addEventListener(EVENTS.PUSHSTATE, onLocationChange);
         window.addEventListener(EVENTS.POPSTATE, onLocationChange);
@@ -21,7 +27,18 @@ export function Router({ routes = [], defaultComponent: DefaultComponent = () =>
 
     let routerParams = {};
 
-    const Page = routes.find(({ path }) => {
+    const routerForchildren = Children.map(children, ({ props, type }) => {
+
+        const { name } = type;
+        const isRoute = name === 'Route';
+
+        return isRoute ? props : null;
+
+    })
+
+    const rourterToRender = routes.concat(routerForchildren).filter(Boolean);
+
+    const Page = rourterToRender.find(({ path }) => {
         if (path === currentPath) return true;
 
         // hemos usado la librería path-to-regexp 
