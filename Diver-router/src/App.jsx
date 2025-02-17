@@ -1,7 +1,7 @@
 
 import { lazy, Suspense } from 'react';
 import { Router } from './Router';
-import Route from './Route';
+import { Route } from './Route';
 import Page404 from './pages/404';
 import SearchPage from './pages/SearchPage';
 
